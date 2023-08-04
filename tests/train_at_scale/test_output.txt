@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0 -- /Users/jarvis/.pyenv/versions/3.10.12/envs/taxifare-env/bin/python3.10
+cachedir: .pytest_cache
+rootdir: /Users/jarvis/one/lewagon1/data_1179/07-ML-Ops/nyc_taxifare_predict/tests
+configfile: pytest_kitt.ini
+collecting ... collected 8 items
+
+tests/train_at_scale/test_clean.py::test_clean_data PASSED               [ 12%]
+tests/train_at_scale/test_main_local.py::TestMainLocal::test_route_preprocess_and_train PASSED [ 25%]
+tests/train_at_scale/test_main_local.py::TestMainLocal::test_route_pred PASSED [ 37%]
+tests/train_at_scale/test_main_local.py::TestMainLocal::test_route_preprocess PASSED [ 50%]
+tests/train_at_scale/test_main_local.py::TestMainLocal::test_route_train PASSED [ 62%]
+tests/train_at_scale/test_model.py::test_model_can_fit PASSED            [ 75%]
+tests/train_at_scale/test_notebook.py::TestNotebook::test_y_pred PASSED  [ 87%]
+tests/train_at_scale/test_processor_pipeline.py::test_preprocess_features PASSED [100%]
+
+======================= 8 passed, 115 warnings in 26.22s =======================
