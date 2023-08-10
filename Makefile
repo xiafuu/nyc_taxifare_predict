@@ -18,6 +18,12 @@ run_evaluate:
 
 run_all: run_preprocess run_train run_pred run_evaluate
 
+run_workflow:
+	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m taxifare.interface.workflow
+
+run_api:
+	uvicorn taxifare.api.fast:app --reload
+
 ##################### TESTS #####################
 default:
 	cat tests/cloud_training/test_output.txt
@@ -37,6 +43,16 @@ test_gcp_bucket:
 	@pytest \
 	tests/all/test_gcp_setup.py::TestGcpSetup::test_setup_bucket_name
 
+test_mlflow_config:
+	@pytest \
+	tests/lifecycle/test_mlflow.py::TestMlflow::test_model_target_is_mlflow \
+	tests/lifecycle/test_mlflow.py::TestMlflow::test_mlflow_experiment_is_not_null \
+	tests/lifecycle/test_mlflow.py::TestMlflow::test_mlflow_model_name_is_not_null
+
+test_prefect_config:
+	@pytest \
+	tests/lifecycle/test_prefect.py::TestPrefect::test_prefect_flow_name_is_not_null \
+	tests/lifecycle/test_prefect.py::TestPrefect::test_prefect_log_level_is_warning
 
 ##################### TESTS TRAIN AT SCALE#####################
 
@@ -91,6 +107,23 @@ test_big_query:
 
 test_vm:
 	tests/cloud_training/test_vm.py
+
+################### TEST API ################
+test_api_root:
+	pytest \
+	tests/api/test_endpoints.py::test_root_is_up --asyncio-mode=strict -W "ignore" \
+	tests/api/test_endpoints.py::test_root_returns_greeting --asyncio-mode=strict -W "ignore"
+
+test_api_predict:
+	pytest \
+	tests/api/test_endpoints.py::test_predict_is_up --asyncio-mode=strict -W "ignore" \
+	tests/api/test_endpoints.py::test_predict_is_dict --asyncio-mode=strict -W "ignore" \
+	tests/api/test_endpoints.py::test_predict_has_key --asyncio-mode=strict -W "ignore" \
+	tests/api/test_endpoints.py::test_predict_val_is_float --asyncio-mode=strict -W "ignore"
+
+test_api_on_prod:
+	pytest \
+	tests/api/test_cloud_endpoints.py --asyncio-mode=strict -W "ignore"
 
 
 

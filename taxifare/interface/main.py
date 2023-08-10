@@ -10,6 +10,7 @@ from taxifare.ml_logic.data import get_data_with_cache, clean_data, load_data_to
 from taxifare.ml_logic.model import initialize_model, compile_model, train_model, evaluate_model
 from taxifare.ml_logic.preprocessor import preprocess_features
 from taxifare.ml_logic.registry import load_model, save_model, save_results
+from taxifare.ml_logic.registry import mlflow_run, mlflow_transition_model
 
 def preprocess(min_date:str = '2009-01-01', max_date:str = '2015-01-01') -> None:
     """
@@ -74,7 +75,7 @@ def preprocess(min_date:str = '2009-01-01', max_date:str = '2015-01-01') -> None
 
     print("✅ preprocess() done \n")
 
-
+@mlflow_run
 def train(
         min_date:str = '2009-01-01',
         max_date:str = '2015-01-01',
@@ -167,10 +168,15 @@ def train(
     # Save model weight on the hard drive (and optionally on GCS too!)
     save_model(model=model)
 
+    # The latest model should be moved to staging
+    if MODEL_TARGET == 'mlflow':
+        mlflow_transition_model(current_stage="None", new_stage='Staging')
+
     print("✅ train() done \n")
 
     return val_mae
 
+@mlflow_run
 def evaluate(
         min_date:str = '2014-01-01',
         max_date:str = '2015-01-01',
@@ -257,6 +263,7 @@ def pred(X_pred: pd.DataFrame = None) -> np.ndarray:
     return y_pred
 
 
+##--------------------------------
 if __name__ == '__main__':
     preprocess(min_date='2009-01-01', max_date='2015-01-01')
     train(min_date='2009-01-01', max_date='2015-01-01')
